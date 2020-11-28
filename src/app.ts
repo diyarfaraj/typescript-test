@@ -11,6 +11,50 @@ function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
   return adjustedDescriptor;
 }
 
+// validation logic
+interface Validatable {
+  value: string | number;
+  required?: boolean;
+  minLength?: number;
+  maxLenght?: number;
+  min?: number;
+  max?: number;
+}
+
+function validate(validatableInput: Validatable) {
+  let isValid = true;
+  if (validatableInput.required) {
+    isValid = isValid && validatableInput.value.toString().trim().length !== 0;
+  }
+  if (
+    validatableInput.minLength != null &&
+    typeof validatableInput.value === "string"
+  ) {
+    isValid =
+      isValid && validatableInput.value.length > validatableInput.minLength;
+  }
+  if (
+    validatableInput.maxLenght != null &&
+    typeof validatableInput.value === "string"
+  ) {
+    isValid =
+      isValid && validatableInput.value.length < validatableInput.maxLenght;
+  }
+  if (
+    validatableInput.min != null &&
+    typeof validatableInput.value === "number"
+  ) {
+    isValid = isValid && validatableInput.value > validatableInput.min;
+  }
+  if (
+    validatableInput.max != null &&
+    typeof validatableInput.value === "number"
+  ) {
+    isValid = isValid && validatableInput.value < validatableInput.max;
+  }
+  return isValid;
+}
+
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
@@ -51,10 +95,26 @@ class ProjectInput {
     const entederdDescription = this.descriptionInputElement.value;
     const entederdPoeple = this.peopleInputElement.value;
 
+    const titleValidatable: Validatable = {
+      value: entederdTitle,
+      required: true,
+    };
+    const descriptionValidatable: Validatable = {
+      value: entederdDescription,
+      required: true,
+      minLength: 5,
+    };
+    const peopleValidatable: Validatable = {
+      value: +entederdPoeple,
+      required: true,
+      min: 1,
+      max: 5,
+    };
+
     if (
-      entederdTitle.trim().length === 0 ||
-      entederdDescription.trim().length === 0 ||
-      entederdPoeple.trim().length === 0
+      validate(titleValidatable) ||
+      validate(descriptionValidatable) ||
+      validate(peopleValidatable)
     ) {
       alert("invalid input, try again");
       return;
