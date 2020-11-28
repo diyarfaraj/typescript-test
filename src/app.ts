@@ -46,9 +46,37 @@ class ProjectInput {
     this.attach();
   }
 
+  private gatherUserInput(): [string, string, number] | void {
+    const entederdTitle = this.titleInputElement.value;
+    const entederdDescription = this.descriptionInputElement.value;
+    const entederdPoeple = this.peopleInputElement.value;
+
+    if (
+      entederdTitle.trim().length === 0 ||
+      entederdDescription.trim().length === 0 ||
+      entederdPoeple.trim().length === 0
+    ) {
+      alert("invalid input, try again");
+      return;
+    } else {
+      return [entederdTitle, entederdDescription, +entederdPoeple];
+    }
+  }
+
+  private clearInput() {
+    this.titleInputElement.value = "";
+    this.descriptionInputElement.value = "";
+    this.peopleInputElement.value = "";
+  }
+  @autobind
   private submitHandler(event: Event) {
     event.preventDefault();
-    console.log(this.titleInputElement.value);
+    const userInput = this.gatherUserInput();
+    if (Array.isArray(userInput)) {
+      const [title, description, people] = userInput;
+      console.log(title, description, people);
+      this.clearInput();
+    }
   }
 
   @autobind
